@@ -14,7 +14,7 @@
           version = "1.1.7";
           src = ./.;
           
-          cargoHash = "sha256-fmiOuxCZoCPOx6OE7YB2pJBegk3y88a9ByDEW/b79Rw=";         
+          cargoHash = "sha256-hacO5cg405l5ur5V/7oBjiGf9Q1AaTELRCndg+Q4Sws=";         
           nativeBuildInputs = with pkgs; [ bash ];
           
           preBuild = ''
