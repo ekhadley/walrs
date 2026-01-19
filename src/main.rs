@@ -85,6 +85,14 @@ struct Arg {
 
     #[argh(
         switch,
+        short = 'C',
+        long = "no-colors",
+        description = "skip setting terminal colors"
+    )]
+    no_colors: Option<bool>,
+
+    #[argh(
+        switch,
         short = 'q',
         long = "quiet",
         description = "set quit mode (no output)"
@@ -115,7 +123,7 @@ fn main() {
             "this will be removed in the next update, use -W instead",
             send,
         );
-        reload(send, true, arg.run_scripts.unwrap_or(false));
+        reload(send, true, arg.run_scripts.unwrap_or(false), arg.no_colors.unwrap_or(false));
         exit(0);
     }
 
@@ -125,6 +133,7 @@ fn main() {
             send,
             arg.walless.unwrap_or(false),
             arg.run_scripts.unwrap_or(false),
+            arg.no_colors.unwrap_or(false),
         );
         exit(0);
     }
@@ -141,7 +150,7 @@ fn main() {
         if v == "themes" {
             print_themes(send);
         } else if theme_exists(&config) {
-            set_theme(v, send, arg.run_scripts.unwrap_or(false));
+            set_theme(v, send, arg.run_scripts.unwrap_or(false), arg.no_colors.unwrap_or(false));
         } else {
             let colorschemes_dir = config.join("walrs").join("colorschemes");
             create_dir_all(&colorschemes_dir).unwrap();
@@ -155,7 +164,7 @@ fn main() {
                 walrs_cache.join("colorschemes").display(),
                 colorschemes_dir.display()
             ));
-            set_theme(v, send, arg.run_scripts.unwrap_or(false));
+            set_theme(v, send, arg.run_scripts.unwrap_or(false), arg.no_colors.unwrap_or(false));
         }
         exit(0);
     }
@@ -186,6 +195,7 @@ fn main() {
             send,
             arg.walless.unwrap_or(false),
             arg.run_scripts.unwrap_or(false),
+            arg.no_colors.unwrap_or(false),
         );
         print_colors(send);
     };

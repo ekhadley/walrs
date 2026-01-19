@@ -55,7 +55,7 @@ pub fn get_wallpaper(cache: &Path, send: bool) -> String {
         .to_string()
 }
 
-pub fn reload(send: bool, set_wal: bool, run_scripts: bool) {
+pub fn reload(send: bool, set_wal: bool, run_scripts: bool, skip_colors: bool) {
     let cache = get_cache(send).join("wal");
     let walrs_cache = share_files();
     let file_path = cache.join("colors");
@@ -76,7 +76,9 @@ pub fn reload(send: bool, set_wal: bool, run_scripts: bool) {
     }
 
     // change terminal colors
-    colors(lines, send);
+    if !skip_colors {
+        colors(lines, send);
+    }
 
     if !run_scripts {
         // initial scripts files
