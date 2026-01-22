@@ -1,3 +1,4 @@
+mod cache;
 mod create_templates;
 mod get_colors;
 mod reload;
@@ -101,6 +102,13 @@ struct Arg {
 
     #[argh(switch, short = 'v', long = "version", description = "show version")]
     version: bool,
+
+    #[argh(
+        switch,
+        long = "regen",
+        description = "force regeneration of colors (ignore cache)"
+    )]
+    regen: bool,
 }
 
 fn main() {
@@ -185,8 +193,21 @@ fn main() {
     // analyze the image and generate the palette
     if arg.image.is_some() {
         let image_path = image_path(arg.image, send);
-        let palette = get_colors(&image_path, send, arg.brightness, arg.saturation);
-        info("Generate", "generate colors", send);
+
+        let palette = if arg.regen {
+            info("Cache", "regenerating colors (--regen)", send);
+            let p = get_colors(&image_path, send, arg.brightness, arg.saturation);
+            cache::save_to_cache(&image_path, &p.0, send);
+            p
+        } else if let Some(cached) = cache::load_cached_colors(&image_path, send) {
+            info("Cache", "using cached colors", send);
+            (cached, 255)
+        } else {
+            info("Cache", "no cache found, extracting colors", send);
+            let p = get_colors(&image_path, send, arg.brightness, arg.saturation);
+            cache::save_to_cache(&image_path, &p.0, send);
+            p
+        };
 
         create_template(palette, &image_path, send);
         info("Template", "create templates", send);
